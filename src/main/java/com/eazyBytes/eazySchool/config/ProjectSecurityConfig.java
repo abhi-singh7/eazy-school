@@ -24,13 +24,15 @@ public class ProjectSecurityConfig {
         http.csrf(csrfConfigurer-> csrfConfigurer
                         .ignoringRequestMatchers("/saveMsg")
                         .ignoringRequestMatchers("/public/**")
+                        .ignoringRequestMatchers("/api/**")
                 )
                 .authorizeHttpRequests((requests) -> requests
                         .requestMatchers("/dashboard").authenticated()
                         .requestMatchers("/displayProfile").authenticated()
                         .requestMatchers("/updateProfile").authenticated()
+                        .requestMatchers("/api/**").authenticated()
                         .requestMatchers("/student/**").hasRole("STUDENT")
-                        .requestMatchers("/displayMessages").hasRole("ADMIN")
+                        .requestMatchers("/displayMessages/**").hasRole("ADMIN")
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/closeMsg/**").hasRole("ADMIN")
                         .requestMatchers( "/", "/home").permitAll()

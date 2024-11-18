@@ -1,5 +1,6 @@
 package com.eazyBytes.eazySchool.service;
 
+import com.eazyBytes.eazySchool.config.EazySchoolProps;
 import com.eazyBytes.eazySchool.constants.EazySchoolConstants;
 import com.eazyBytes.eazySchool.model.Contact;
 import com.eazyBytes.eazySchool.repository.ContactRepository;
@@ -11,19 +12,18 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-
 @Slf4j
 @Service
 public class ContactService {
 
     private final ContactRepository contactRepository;
 
+    private final EazySchoolProps eazySchoolProps;
+
     @Autowired
-    public ContactService(ContactRepository contactRepository) {
+    public ContactService(ContactRepository contactRepository, EazySchoolProps eazySchoolProps) {
         this.contactRepository = contactRepository;
+        this.eazySchoolProps = eazySchoolProps;
     }
 
 
@@ -40,11 +40,20 @@ public class ContactService {
     }
 
     public Page<Contact> findMsgsWithOpenStatus(int pageNum, String sortField, String sortDir){
+     eazySchoolProps.getContact().forEach(
+             (k,v)-> log.info("Contacts {} are {}", k,v)
+     );
+
+     log.info("-----------------");
+     eazySchoolProps.getBranches().forEach(
+             s->log.info("Branches are --->"+ s)
+     );
+
         int pageSize = 5;
         Pageable pageable = PageRequest.of(pageNum - 1, pageSize,
                 sortDir.equals("asc") ? Sort.by(sortField).ascending()
                         : Sort.by(sortField).descending());
-        Page<Contact> msgPage = contactRepository.findByStatus(
+        Page<Contact> msgPage = contactRepository.findByStatusWithPage(
                 EazySchoolConstants.OPEN,pageable);
         return msgPage;
     }
